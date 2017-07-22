@@ -5,7 +5,7 @@
         xmlns:cal="http://www.caliburnproject.org"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         WindowState="Normal"
-        ShowInTaskbar="False"
+        ShowInTaskbar="True"
         Topmost="False"
         WindowStyle="ToolWindow"
         Height="550" Width="725">
@@ -41,7 +41,7 @@
                 <ContextMenu>
                     <MenuItem Header="Configure" cal:Message.Attach="Configure" />
                     <Separator />
-                    <MenuItem Header="Generate Zip Archive" />
+                    <MenuItem Header="Generate Zip Archive" cal:Message.Attach="GenerateArchive"/>
                     <Separator />
                     <MenuItem Header="Exit" cal:Message.Attach="Exit" />
                 </ContextMenu>

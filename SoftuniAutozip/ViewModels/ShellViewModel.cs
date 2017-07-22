@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.IO.Packaging;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Windows;
+using System.Threading;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using SoftuniAutozip.Interfaces;
 using SoftuniAutozip.Views;
@@ -25,15 +23,19 @@ namespace SoftuniAutozip.ViewModels
         private readonly INameResolver _nameResolver;
         private readonly IOpenFileDialogManager _openFileDialogManager;
         private readonly IOpenFolderDialogManager _openFolderDialogManager;
+        private readonly IZipArchiver _archiver;
+        private readonly IClipboardManager _clipboardManager;
 
         public ShellViewModel(INameResolver nameResolver, IOpenFolderDialogManager openFolderDialogManager,
-            IOpenFileDialogManager openFileDialogManager)
+            IOpenFileDialogManager openFileDialogManager, IZipArchiver archiver, IClipboardManager clipboardManager)
         {
             DisplayName = "Softuni Autozip Configurator";
 
             _nameResolver = nameResolver;
             _openFolderDialogManager = openFolderDialogManager;
             _openFileDialogManager = openFileDialogManager;
+            _archiver = archiver;
+            _clipboardManager = clipboardManager;
 
             IsBaseDirectorySelected = false;
 
@@ -57,8 +59,8 @@ namespace SoftuniAutozip.ViewModels
                 if (string.IsNullOrWhiteSpace(_archiveName) && !_isFirstCall)
                 {
                     _archiveName = _nameResolver.NewName();
-                    _isFirstCall = false;
                 }
+                _isFirstCall = false;
                 return _archiveName;
             }
             set
@@ -123,7 +125,7 @@ namespace SoftuniAutozip.ViewModels
 
         public void ChooseBaseFolder()
         {
-            string newPath= _openFolderDialogManager.ShowDialog(BaseArchiveDirectory);
+            string newPath = _openFolderDialogManager.ShowDialog(BaseArchiveDirectory);
             if (!string.IsNullOrWhiteSpace(newPath))
             {
                 BaseArchiveDirectory = newPath;
@@ -167,7 +169,7 @@ namespace SoftuniAutozip.ViewModels
                     "The directory you exclude must be in the directory you want to archive!");
             }
 
-            directory.Replace(BaseArchiveDirectory, "");
+            directory = directory.Replace(BaseArchiveDirectory, "");
             ExcludedDirectories.Add(directory);
         }
         public void ClearExcludedDirectories()
@@ -177,6 +179,25 @@ namespace SoftuniAutozip.ViewModels
         public void ClearExcludedFiles()
         {
             ExcludedFiles.Clear();
+        }
+        public void GenerateArchive()
+        {
+            _archiver.ExcludedDirectories = ExcludedDirectories;
+            _archiver.ExcludedFiles = ExcludedFiles;
+            _archiver.BaseDirectory = BaseArchiveDirectory;
+            string archiveFullName = "";
+
+            /*Task.Run(() => _archiver.Archive(ArchiveName))
+               .ContinueWith(archivationSucceeded =>
+                {
+                    if (archivationSucceeded.Result)
+                    {
+                        _clipboardManager.CopyFile(archiveFullName);
+                    }
+                });*/
+
+            _archiver.Archive(ArchiveName, out archiveFullName);
+            _clipboardManager.CopyText(archiveFullName);
         }
 
 

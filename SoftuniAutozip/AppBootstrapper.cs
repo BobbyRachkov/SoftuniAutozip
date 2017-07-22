@@ -28,6 +28,8 @@ namespace SoftuniAutozip {
             container.Singleton<INameResolver, NamingService>();
             container.Singleton<IOpenFolderDialogManager, DialogManagers>();
             container.Singleton<IOpenFileDialogManager, DialogManagers>();
+            container.Singleton<IZipArchiver, ZipArchiver>();
+            container.Singleton<IClipboardManager, ClipboardManager>();
         }
 
         protected override object GetInstance(Type service, string key)
