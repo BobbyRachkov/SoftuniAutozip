@@ -1,0 +1,156 @@
+<Window x:Class="SoftuniAutozip.Views.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SoftuniAutozip"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        WindowState="Normal"
+        ShowInTaskbar="False"
+        Topmost="False"
+        WindowStyle="ToolWindow"
+        Height="550" Width="725">
+    <Window.Resources>
+        <Style TargetType="Button" x:Key="ExclusionButtonStyle">
+            <Style.Setters>
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Height" Value="20" />
+            </Style.Setters>
+        </Style>
+        <Style TargetType="ListBox" x:Key="ExclusionListBoxStyle">
+            <Style.Setters>
+                <Setter Property="Margin" Value="0,0,0,25" />
+            </Style.Setters>
+        </Style>
+        <ItemsPanelTemplate x:Key="ExclusionListBoxDataType">
+            <Grid />
+        </ItemsPanelTemplate>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <tb:TaskbarIcon
+            x:Name="TaskbarIcon"
+            MenuActivation="LeftOrRightClick"
+            IconSource="../Images/icon.ico"
+            ToolTipText="Softuni Autozip" Grid.RowSpan="2">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Configure" cal:Message.Attach="Configure" />
+                    <Separator />
+                    <MenuItem Header="Generate Zip Archive" />
+                    <Separator />
+                    <MenuItem Header="Exit" cal:Message.Attach="Exit" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+        <Grid Grid.Row="0" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Margin="20,0"
+                Text="Folder to archive:"
+                Grid.Column="0" />
+            <TextBox
+                Grid.Column="1"
+                Text="{Binding BaseArchiveDirectory}"
+                IsEnabled="False" />
+            <Button
+                cal:Message.Attach="ChooseBaseFolder"
+                Margin="20,0"
+                Content="Choose"
+                Grid.Column="2" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <GroupBox
+                Margin="5,0"
+                Header="Before archiving delete">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Directories:">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ListBox
+                                ItemsSource="{Binding ExcludedDirectories}"
+                                Style="{StaticResource ExclusionListBoxStyle}"
+                                Grid.ColumnSpan="2" />
+                            <Button
+                                IsEnabled="{Binding IsBaseDirectorySelected}"
+                                Margin="0,0,2.5,0"
+                                Grid.Column="0"
+                                cal:Message.Attach="ExcludeDirectory"
+                                Style="{StaticResource ExclusionButtonStyle}"
+                                Content="Exclude directory" />
+                            <Button
+                                Margin="2.5,0,0,0"
+                                Grid.Column="1"
+                                cal:Message.Attach="ClearExcludedDirectories"
+                                Style="{StaticResource ExclusionButtonStyle}"
+                                Content="Clear Excluded Directories" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox
+                        Header="Files:"
+                        Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ListBox
+                                ItemsSource="{Binding ExcludedFiles}"
+                                Style="{StaticResource ExclusionListBoxStyle}"
+                                Grid.ColumnSpan="2" />
+                            <Button
+                                IsEnabled="{Binding IsBaseDirectorySelected}"
+                                Margin="0,0,2.5,0"
+                                Grid.Column="0"
+                                cal:Message.Attach="ExcludeFile"
+                                Style="{StaticResource ExclusionButtonStyle}"
+                                Content="Exclude file" />
+                            <Button
+                                Margin="2.5,0,0,0"
+                                Grid.Column="1"
+                                cal:Message.Attach="ClearExcludedFiles"
+                                Style="{StaticResource ExclusionButtonStyle}"
+                                Content="Clear Excluded Files" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical">
+                <TextBlock
+                    Margin="30,0,0,0"
+                    Text="Archive name: (If empty, name will be generated automatically)" />
+                <TextBox
+                    Text="{Binding ArchiveName}"
+                    Height="20"
+                    Margin="20,5,0,0" />
+            </StackPanel>
+            <Button
+                IsEnabled="{Binding IsBaseDirectorySelected}"
+                Grid.Column="1"
+                Margin="50,10"
+                Content="Done!"
+                cal:Message.Attach="Hide" />
+        </Grid>
+    </Grid>
+</Window>
